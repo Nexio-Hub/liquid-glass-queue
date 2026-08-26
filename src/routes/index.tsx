@@ -50,7 +50,7 @@ function Index() {
     setTimeout(() => {
       setPopup("idle");
       setValue("");
-    }, 320);
+    }, 420);
   };
 
   return (
