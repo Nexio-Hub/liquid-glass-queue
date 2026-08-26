@@ -93,6 +93,63 @@
   }
 }
 
+/* Smooth Liquid Glass popup motion */
+@keyframes glass-popup-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes glass-popup-exit {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+}
+
+@keyframes glass-bg-enter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes glass-bg-exit {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@utility glass-popup-enter {
+  animation: glass-popup-enter 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility glass-popup-exit {
+  animation: glass-popup-exit 0.4s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@utility glass-bg-enter {
+  animation: glass-bg-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@utility glass-bg-exit {
+  animation: glass-bg-exit 0.35s cubic-bezier(0.4, 0, 1, 1) both;
+}
+
 @utility glass-panel {
   background: color-mix(in oklab, var(--card) 100%, transparent);
   backdrop-filter: blur(28px) saturate(180%);
