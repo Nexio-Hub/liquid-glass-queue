@@ -279,8 +279,17 @@ function ExclamationIcon() {
       aria-hidden="true"
     >
       <circle cx="12" cy="12" r="11" fill="var(--primary)" />
-      <rect x="10.7" y="5.4" width="2.6" height="8.2" rx="1.3" fill="#fff" />
-      <circle cx="12" cy="17" r="1.5" fill="#fff" />
+      <text
+        x="12"
+        y="18.5"
+        textAnchor="middle"
+        fontSize="17"
+        fontWeight="900"
+        fill="#fff"
+        fontFamily='-apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif'
+      >
+        !
+      </text>
     </svg>
   );
 }
