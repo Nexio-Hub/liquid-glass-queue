@@ -2,7 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import glassBg from "@/assets/glass-bg.jpg";
 
-type PopupState = "idle" | "waiting" | "success" | "closing";
+type PopupState = "idle" | "waiting" | "success" | "already";
+
+const COOLDOWN_MS = 5 * 60 * 60 * 1000; // 5 hours
+const STORAGE_KEY = "queue-entered-at";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -24,10 +27,53 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
+function formatCountdown(ms: number) {
+  const totalSec = Math.max(0, Math.ceil(ms / 1000));
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = totalSec % 60;
+  return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
 function Index() {
   const [value, setValue] = useState("");
   const [popup, setPopup] = useState<PopupState>("idle");
+  const [visible, setVisible] = useState(false);
+  const [enteredAt, setEnteredAt] = useState<number | null>(null);
+  const [now, setNow] = useState(() => Date.now());
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Restore queue state on load
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (!stored) return;
+    const t = parseInt(stored, 10);
+    if (!isNaN(t) && Date.now() - t < COOLDOWN_MS) {
+      setEnteredAt(t);
+    } else {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }, []);
+
+  const inQueue = enteredAt !== null;
+  const remainingMs = enteredAt
+    ? Math.max(0, COOLDOWN_MS - (now - enteredAt))
+    : 0;
+
+  // Live countdown tick while in queue
+  useEffect(() => {
+    if (!inQueue) return;
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [inQueue]);
+
+  // Clear cooldown when it expires
+  useEffect(() => {
+    if (inQueue && remainingMs === 0) {
+      setEnteredAt(null);
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }, [inQueue, remainingMs]);
 
   useEffect(() => {
     return () => {
@@ -38,20 +84,33 @@ function Index() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!value.trim()) return;
+    if (inQueue) {
+      setPopup("already");
+      setVisible(true);
+      return;
+    }
     setPopup("waiting");
+    setVisible(true);
     timerRef.current = setTimeout(() => {
+      const t = Date.now();
+      setEnteredAt(t);
+      setNow(t);
+      localStorage.setItem(STORAGE_KEY, String(t));
       setPopup("success");
     }, 5000);
   };
 
   const closePopup = () => {
-    if (popup === "closing") return;
-    setPopup("closing");
+    if (!visible) return;
+    setVisible(false);
     setTimeout(() => {
       setPopup("idle");
       setValue("");
     }, 420);
   };
+
+  const showPopup = popup !== "idle";
+  const canClose = popup === "success" || popup === "already";
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
@@ -107,23 +166,29 @@ function Index() {
         </div>
       </main>
 
-      {popup !== "idle" && (
+      {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
           {/* Backdrop */}
           <div
-            className={`absolute inset-0 ${popup === "closing" ? "glass-bg-exit" : "glass-bg-enter"}`}
+            className={`absolute inset-0 ${visible ? "glass-bg-enter" : "glass-bg-exit"}`}
             style={{
               background: "oklch(0.15 0.03 264 / 0.35)",
               backdropFilter: "blur(8px)",
             }}
-            onClick={popup === "success" ? closePopup : undefined}
+            onClick={canClose && visible ? closePopup : undefined}
           />
 
           <div
             role="dialog"
             aria-modal="true"
-            aria-label={popup === "waiting" ? "Putting you in the queue" : "Success"}
-            className={`glass-panel relative w-full max-w-sm rounded-4xl px-7 py-9 text-center ${popup === "closing" ? "glass-popup-exit" : "glass-popup-enter"}`}
+            aria-label={
+              popup === "waiting"
+                ? "Putting you in the queue"
+                : popup === "already"
+                  ? "Already in the queue"
+                  : "Success"
+            }
+            className={`glass-panel relative w-full max-w-sm rounded-4xl px-7 py-9 text-center ${visible ? "glass-popup-enter" : "glass-popup-exit"}`}
           >
             {popup === "waiting" ? (
               <div className="flex flex-col items-center">
@@ -131,6 +196,25 @@ function Index() {
                 <p className="mt-6 text-lg font-semibold text-foreground">
                   Putting you in the queue...
                 </p>
+              </div>
+            ) : popup === "already" ? (
+              <div className="flex flex-col items-center">
+                <div className="flex items-center justify-center gap-3">
+                  <ExclamationIcon />
+                  <p className="text-left text-lg font-semibold leading-snug text-foreground">
+                    You're already in the queue!
+                  </p>
+                </div>
+                <p className="mt-3 text-base font-medium text-muted-foreground">
+                  Come back in {formatCountdown(remainingMs)}
+                </p>
+                <button
+                  type="button"
+                  onClick={closePopup}
+                  className="glass-button mt-7 w-full rounded-2xl px-5 py-3.5 text-base font-semibold hover:brightness-110 active:scale-[0.98]"
+                >
+                  OK
+                </button>
               </div>
             ) : (
               <div className="flex flex-col items-center">
@@ -181,6 +265,27 @@ function ClockIcon() {
     >
       <circle cx="12" cy="12" r="9" />
       <path d="M12 7v5l3 2" />
+    </svg>
+  );
+}
+
+function ExclamationIcon() {
+  return (
+    <svg
+      width="28"
+      height="28"
+      viewBox="0 0 24 24"
+      className="shrink-0"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="11" fill="var(--primary)" />
+      <path
+        d="M12 6.5v6"
+        stroke="var(--primary-foreground)"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+      />
+      <circle cx="12" cy="16.6" r="1.4" fill="var(--primary-foreground)" />
     </svg>
   );
 }
