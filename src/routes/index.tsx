@@ -188,7 +188,7 @@ function Index() {
                   ? "Already in the queue"
                   : "Success"
             }
-            className={`glass-panel relative w-full max-w-sm rounded-4xl px-7 py-9 text-center ${visible ? "glass-popup-enter" : "glass-popup-exit"}`}
+            className={`glass-panel-popup relative w-full max-w-sm rounded-4xl px-7 py-9 text-center ${visible ? "glass-popup-enter" : "glass-popup-exit"}`}
           >
             {popup === "waiting" ? (
               <div className="flex flex-col items-center">
