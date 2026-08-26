@@ -50,7 +50,7 @@ function Index() {
     setTimeout(() => {
       setPopup("idle");
       setValue("");
-    }, 320);
+    }, 420);
   };
 
   return (
@@ -111,7 +111,7 @@ function Index() {
         <div className="fixed inset-0 z-50 flex items-center justify-center px-6">
           {/* Backdrop */}
           <div
-            className={`absolute inset-0 ${popup === "closing" ? "animate-fade-out" : "animate-fade-in"}`}
+            className={`absolute inset-0 ${popup === "closing" ? "glass-bg-exit" : "glass-bg-enter"}`}
             style={{
               background: "oklch(0.15 0.03 264 / 0.35)",
               backdropFilter: "blur(8px)",
@@ -123,7 +123,7 @@ function Index() {
             role="dialog"
             aria-modal="true"
             aria-label={popup === "waiting" ? "Putting you in the queue" : "Success"}
-            className={`glass-panel relative w-full max-w-sm rounded-4xl px-7 py-9 text-center ${popup === "closing" ? "animate-exit" : "animate-enter"}`}
+            className={`glass-panel relative w-full max-w-sm rounded-4xl px-7 py-9 text-center ${popup === "closing" ? "glass-popup-exit" : "glass-popup-enter"}`}
           >
             {popup === "waiting" ? (
               <div className="flex flex-col items-center">
