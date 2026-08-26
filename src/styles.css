@@ -192,6 +192,21 @@
   transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
+@utility glass-button-danger {
+  background: linear-gradient(
+    180deg,
+    oklch(0.63 0.2 22) 0%,
+    oklch(0.53 0.21 25) 100%
+  );
+  color: oklch(0.98 0 0);
+  cursor: pointer;
+  box-shadow:
+    0 1px 1px 0 oklch(1 0 0 / 35%) inset,
+    0 0 0 0.5px oklch(0.5 0.21 25 / 0.5),
+    0 6px 16px -8px oklch(0.5 0.21 25 / 0.4);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
 @utility glass-button-ghost {
   background: color-mix(in oklab, var(--secondary) 100%, transparent);
   backdrop-filter: blur(16px);
