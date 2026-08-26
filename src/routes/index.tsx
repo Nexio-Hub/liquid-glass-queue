@@ -279,13 +279,8 @@ function ExclamationIcon() {
       aria-hidden="true"
     >
       <circle cx="12" cy="12" r="11" fill="var(--primary)" />
-      <path
-        d="M12 6.5v6"
-        stroke="var(--primary-foreground)"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-      />
-      <circle cx="12" cy="16.6" r="1.4" fill="var(--primary-foreground)" />
+      <rect x="10.7" y="5.4" width="2.6" height="8.2" rx="1.3" fill="#fff" />
+      <circle cx="12" cy="17" r="1.5" fill="#fff" />
     </svg>
   );
 }
