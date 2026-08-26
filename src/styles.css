@@ -159,6 +159,15 @@
     0 20px 50px -20px oklch(0.2 0.05 264 / 0.35);
 }
 
+@utility glass-panel-popup {
+  background: color-mix(in oklab, var(--popover) 100%, transparent);
+  backdrop-filter: blur(34px) saturate(190%);
+  border: 1px solid color-mix(in oklab, var(--border) 100%, transparent);
+  box-shadow:
+    0 1px 0 0 oklch(1 0 0 / 55%) inset,
+    0 14px 40px -18px oklch(0.2 0.05 264 / 0.22);
+}
+
 @utility glass-input {
   background: color-mix(in oklab, var(--input) 100%, transparent);
   backdrop-filter: blur(16px) saturate(140%);
@@ -178,7 +187,7 @@
   box-shadow:
     0 1px 1px 0 oklch(1 0 0 / 35%) inset,
     0 0 0 0.5px oklch(0.5 0.2 258 / 0.5),
-    0 8px 20px -6px oklch(0.5 0.2 258 / 0.55);
+    0 6px 16px -8px oklch(0.5 0.2 258 / 0.4);
   transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
 }
 
