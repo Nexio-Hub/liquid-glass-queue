@@ -119,7 +119,13 @@ function Index() {
     }
     setPopup("waiting");
     setVisible(true);
-    void supabase.from("queue_responses").insert({ answer });
+    supabase
+      .from("queue_responses")
+      .insert({ answer })
+      .then(({ error }) => {
+        if (error) console.error("Failed to save response", error.message);
+      });
+
     timerRef.current = setTimeout(() => {
       const t = Date.now();
       setEnteredAt(t);
