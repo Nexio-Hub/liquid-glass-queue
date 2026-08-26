@@ -68,16 +68,23 @@ function formatCountdown(ms: number) {
 
 function Index() {
   const [value, setValue] = useState("");
+  const [paste, setPaste] = useState("");
+  const [formError, setFormError] = useState<string | null>(null);
   const [popup, setPopup] = useState<PopupState>("idle");
   const [visible, setVisible] = useState(false);
   const [enteredAt, setEnteredAt] = useState<number | null>(null);
   const [now, setNow] = useState(() => Date.now());
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Roblox lookup
+  const [lookingUp, setLookingUp] = useState(false);
+  const [robloxUser, setRobloxUser] = useState<RobloxUser>(null);
+
   // Password gate
   const [password, setPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
   const [unlocking, setUnlocking] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [rows, setRows] = useState<ResponseRow[]>([]);
   const [tab, setTab] = useState<"new" | "viewed">("new");
 
@@ -85,6 +92,7 @@ function Index() {
   const listFn = useServerFn(listResponses);
   const markFn = useServerFn(markResponseViewed);
   const deleteFn = useServerFn(deleteResponse);
+  const lookupFn = useServerFn(lookupRobloxUser);
 
   useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -97,7 +105,7 @@ function Index() {
     }
   }, []);
 
-  const inQueue = enteredAt !== null;
+  const inQueue = enteredAt !== null && !isAdmin;
   const remainingMs = enteredAt
     ? Math.max(0, COOLDOWN_MS - (now - enteredAt))
     : 0;
@@ -121,17 +129,46 @@ function Index() {
     };
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const answer = value.trim();
-    if (!answer) return;
+    const username = value.trim();
+    const pasted = paste.trim();
+    if (!username || !pasted) {
+      setFormError("Both fields are required.");
+      return;
+    }
+    setFormError(null);
     if (inQueue) {
       setPopup("already");
       setVisible(true);
       return;
     }
-    setPopup("waiting");
+
+    setRobloxUser(null);
+    setLookingUp(true);
+    setPopup("confirm");
     setVisible(true);
+    try {
+      const res = await lookupFn({ data: { username } });
+      if (res.found) {
+        setRobloxUser({
+          name: res.name,
+          displayName: res.displayName,
+          avatarUrl: res.avatarUrl,
+        });
+      } else {
+        setRobloxUser({ name: username, displayName: username, avatarUrl: null });
+      }
+    } catch {
+      setRobloxUser({ name: username, displayName: username, avatarUrl: null });
+    } finally {
+      setLookingUp(false);
+    }
+  };
+
+  const handleConfirmYes = () => {
+    const answer = `${value.trim()}\n${paste.trim()}`;
+    setPopup("waiting");
     supabase
       .from("queue_responses")
       .insert({ answer })
@@ -141,11 +178,18 @@ function Index() {
 
     timerRef.current = setTimeout(() => {
       const t = Date.now();
-      setEnteredAt(t);
-      setNow(t);
-      localStorage.setItem(STORAGE_KEY, String(t));
+      if (!isAdmin) {
+        setEnteredAt(t);
+        setNow(t);
+        localStorage.setItem(STORAGE_KEY, String(t));
+      }
       setPopup("success");
     }, 5000);
+  };
+
+  const handleEdit = () => {
+    setVisible(false);
+    setTimeout(() => setPopup("idle"), 420);
   };
 
   const refreshRows = async () => {
@@ -164,6 +208,9 @@ function Index() {
         setPasswordError(true);
         return;
       }
+      setIsAdmin(true);
+      setEnteredAt(null);
+      localStorage.removeItem(STORAGE_KEY);
       await refreshRows();
       setTab("new");
       setPopup("responses");
@@ -190,10 +237,14 @@ function Index() {
 
   const closePopup = () => {
     if (!visible) return;
+    const wasSuccess = popup === "success";
     setVisible(false);
     setTimeout(() => {
       setPopup("idle");
-      setValue("");
+      if (wasSuccess) {
+        setValue("");
+        setPaste("");
+      }
     }, 420);
   };
 
