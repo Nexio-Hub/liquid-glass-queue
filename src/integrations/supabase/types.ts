@@ -14,7 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      queue_responses: {
+        Row: {
+          answer: string
+          created_at: string
+          id: string
+          viewed: boolean
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          id?: string
+          viewed?: boolean
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          id?: string
+          viewed?: boolean
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
