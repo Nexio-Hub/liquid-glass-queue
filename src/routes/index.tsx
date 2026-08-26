@@ -10,8 +10,21 @@ import {
   markResponseViewed,
   deleteResponse,
 } from "@/lib/queue.functions";
+import { lookupRobloxUser } from "@/lib/roblox.functions";
 
-type PopupState = "idle" | "waiting" | "success" | "already" | "responses";
+type PopupState =
+  | "idle"
+  | "confirm"
+  | "waiting"
+  | "success"
+  | "already"
+  | "responses";
+
+type RobloxUser = {
+  name: string;
+  displayName: string;
+  avatarUrl: string | null;
+} | null;
 
 type ResponseRow = {
   id: string;
