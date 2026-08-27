@@ -36,6 +36,13 @@ type ResponseRow = {
 const COOLDOWN_MS = 5 * 60 * 60 * 1000; // 5 hours
 const STORAGE_KEY = "queue-entered-at";
 
+// ───────────────────────────────────────────────────────────────────────────
+// How To Use tutorial video. Change this YouTube video ID to swap the video.
+// The full embed URL is built from it below, so you only need to edit this one.
+// ───────────────────────────────────────────────────────────────────────────
+const TUTORIAL_VIDEO_ID = "dQw4w9WgXcQ";
+const TUTORIAL_VIDEO_SRC = `https://www.youtube-nocookie.com/embed/${TUTORIAL_VIDEO_ID}`;
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
