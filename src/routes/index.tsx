@@ -326,6 +326,27 @@ function Index() {
           </div>
         </section>
 
+        {/* How To Use tutorial video */}
+        <section className="flex min-h-screen flex-col items-center justify-center px-6 py-16">
+          <div className="w-full max-w-2xl text-center">
+            <h2 className="text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+              How To Use
+            </h2>
+            <div className="glass-panel mt-8 overflow-hidden rounded-3xl p-3">
+              <div className="relative aspect-video w-full overflow-hidden rounded-2xl ring-1 ring-white/15">
+                <iframe
+                  className="absolute inset-0 h-full w-full"
+                  src={TUTORIAL_VIDEO_SRC}
+                  title="How To Use — Nyrox's Exec."
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Password section */}
         <section className="flex min-h-screen flex-col items-center justify-center px-6 py-16">
           <div className="w-full max-w-md text-center">
