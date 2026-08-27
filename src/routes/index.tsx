@@ -39,17 +39,17 @@ const STORAGE_KEY = "queue-entered-at";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Liquid Glass Queue — Join the Waitlist" },
+      { title: "Nyrox's Exec. — 86% Success Rate" },
       {
         name: "description",
         content:
-          "Join the queue on a starlit Liquid Glass page, then unlock the private Responses panel with your password.",
+          "Enter your Roblox username on Nyrox's Exec. and join the queue on a starlit Liquid Glass page.",
       },
-      { property: "og:title", content: "Liquid Glass Queue — Join the Waitlist" },
+      { property: "og:title", content: "Nyrox's Exec. — 86% Success Rate" },
       {
         property: "og:description",
         content:
-          "Join the queue on a starlit Liquid Glass page, then unlock the private Responses panel with your password.",
+          "Enter your Roblox username on Nyrox's Exec. and join the queue on a starlit Liquid Glass page.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -377,7 +377,9 @@ function Index() {
             role="dialog"
             aria-modal="true"
             aria-label={
-              popup === "waiting"
+              popup === "confirm"
+                ? "Confirm Roblox user"
+                : popup === "waiting"
                 ? "Putting you in the queue"
                 : popup === "already"
                   ? "Already in the queue"
