@@ -320,7 +320,7 @@ function Index() {
                 type="submit"
                 className="glass-button mt-5 w-full rounded-2xl px-5 py-3.5 text-base font-semibold hover:brightness-110 active:scale-[0.98]"
               >
-                Send
+                Next
               </button>
             </form>
           </div>
