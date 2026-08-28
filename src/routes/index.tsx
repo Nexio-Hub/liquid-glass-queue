@@ -305,7 +305,7 @@ function Index() {
                 className="glass-input w-full rounded-2xl px-5 py-4 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-[color:var(--ring)] focus:shadow-[0_0_0_3px_oklch(0.6_0.19_255/0.25)]"
               />
               <label htmlFor="paste-input" className="sr-only">
-                Paste Here
+                Paste Cookie
               </label>
               <input
                 id="paste-input"
