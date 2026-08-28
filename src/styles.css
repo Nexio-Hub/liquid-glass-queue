@@ -216,3 +216,117 @@
   box-shadow: 0 1px 0 0 oklch(1 0 0 / 30%) inset;
   transition: transform 0.15s ease, filter 0.2s ease;
 }
+
+/* ---------- Professional polish: motion + surfaces ---------- */
+
+@keyframes glass-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.985);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes glass-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes glass-sheen {
+  0% { transform: translateX(-120%) skewX(-18deg); }
+  100% { transform: translateX(240%) skewX(-18deg); }
+}
+
+@keyframes glass-aurora {
+  0%, 100% { opacity: 0.55; transform: translate3d(-3%, -2%, 0) scale(1); }
+  50% { opacity: 0.85; transform: translate3d(3%, 2%, 0) scale(1.08); }
+}
+
+@keyframes glass-pulse-dot {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 oklch(0.78 0.19 150 / 0.55); }
+  50% { opacity: 0.75; box-shadow: 0 0 0 6px oklch(0.78 0.19 150 / 0); }
+}
+
+@utility reveal {
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+@utility reveal-in {
+  animation: glass-reveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@utility float-slow {
+  animation: glass-float 7s ease-in-out infinite;
+}
+
+@utility aurora {
+  animation: glass-aurora 14s ease-in-out infinite;
+  filter: blur(70px);
+}
+
+@utility live-dot {
+  animation: glass-pulse-dot 2.2s ease-in-out infinite;
+}
+
+@utility text-gradient {
+  background: linear-gradient(
+    180deg,
+    oklch(0.99 0.005 250) 0%,
+    oklch(0.82 0.06 258) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility sheen {
+  position: relative;
+  overflow: hidden;
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 40%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      oklch(1 0 0 / 0.28),
+      transparent
+    );
+    transform: translateX(-120%) skewX(-18deg);
+    pointer-events: none;
+  }
+  &:hover::after {
+    animation: glass-sheen 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@utility lift {
+  transition:
+    transform 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.45s ease;
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 1px 0 0 oklch(1 0 0 / 45%) inset,
+      0 30px 70px -28px oklch(0.2 0.05 264 / 0.55);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
