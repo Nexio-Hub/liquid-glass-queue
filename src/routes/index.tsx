@@ -46,7 +46,7 @@ const TUTORIAL_VIDEO_SRC = `https://www.youtube-nocookie.com/embed/${TUTORIAL_VI
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Nyrox's Exec. — 86% Success Rate" },
+      { title: "Nyrox's Beamer" },
       {
         name: "description",
         content:
@@ -283,7 +283,7 @@ function Index() {
         <section className="flex min-h-screen flex-col items-center justify-center px-6 py-16">
           <div className="w-full max-w-md text-center">
             <h1 className="text-5xl font-semibold tracking-tight text-foreground sm:text-6xl">
-              Nyrox's Exec.
+              Nyrox's Beamer
             </h1>
             <p className="mt-3 text-lg font-medium text-muted-foreground">
               86% Success Rate
