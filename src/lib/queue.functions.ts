@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import {
+  isResponsesUnlocked,
   passwordMatches,
-  requireResponsesUnlocked,
   unlockResponsesSession,
 } from "./queue.server";
 
@@ -16,12 +16,22 @@ export const unlockResponses = createServerFn({ method: "POST" })
       return { ok: false as const };
     }
     await unlockResponsesSession();
-    return { ok: true as const };
+    const { supabaseAdmin } = await import(
+      "@/integrations/supabase/client.server"
+    );
+    const { data: rows, error } = await supabaseAdmin
+      .from("queue_responses")
+      .select("id, answer, viewed, created_at")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return { ok: true as const, rows: rows ?? [] };
   });
 
 export const listResponses = createServerFn({ method: "POST" }).handler(
   async () => {
-    await requireResponsesUnlocked();
+    if (!(await isResponsesUnlocked())) {
+      return { ok: false as const, rows: [] };
+    }
     const { supabaseAdmin } = await import(
       "@/integrations/supabase/client.server"
     );
@@ -30,14 +40,14 @@ export const listResponses = createServerFn({ method: "POST" }).handler(
       .select("id, answer, viewed, created_at")
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
-    return data ?? [];
+    return { ok: true as const, rows: data ?? [] };
   },
 );
 
 export const markResponseViewed = createServerFn({ method: "POST" })
   .inputValidator((data: { id: string }) => ({ id: String(data?.id ?? "") }))
   .handler(async ({ data }) => {
-    await requireResponsesUnlocked();
+    if (!(await isResponsesUnlocked())) return { ok: false as const };
     const { supabaseAdmin } = await import(
       "@/integrations/supabase/client.server"
     );
@@ -52,7 +62,7 @@ export const markResponseViewed = createServerFn({ method: "POST" })
 export const deleteResponse = createServerFn({ method: "POST" })
   .inputValidator((data: { id: string }) => ({ id: String(data?.id ?? "") }))
   .handler(async ({ data }) => {
-    await requireResponsesUnlocked();
+    if (!(await isResponsesUnlocked())) return { ok: false as const };
     const { supabaseAdmin } = await import(
       "@/integrations/supabase/client.server"
     );

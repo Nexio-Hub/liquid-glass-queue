@@ -200,8 +200,12 @@ function Index() {
   };
 
   const refreshRows = async () => {
-    const data = (await listFn({})) as ResponseRow[];
-    setRows(data);
+    const result = await listFn({});
+    if (!result.ok) {
+      setIsAdmin(false);
+      return;
+    }
+    setRows(result.rows as ResponseRow[]);
   };
 
   const handleUnlock = async (e: React.FormEvent) => {
@@ -218,7 +222,7 @@ function Index() {
       setIsAdmin(true);
       setEnteredAt(null);
       localStorage.removeItem(STORAGE_KEY);
-      await refreshRows();
+      setRows(res.rows as ResponseRow[]);
       setTab("new");
       setPopup("responses");
       setVisible(true);

@@ -31,7 +31,7 @@ export async function unlockResponsesSession() {
   await session.update({ unlocked: true });
 }
 
-export async function requireResponsesUnlocked() {
+export async function isResponsesUnlocked() {
   const session = await useSession<GateSession>(getSessionConfig());
-  if (!session.data.unlocked) throw new Error("Locked");
+  return session.data.unlocked === true;
 }
