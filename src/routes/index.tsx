@@ -147,6 +147,13 @@ function Index() {
   }, [inQueue, remainingMs]);
 
   useEffect(() => {
+    if (popup !== "disclaimer") return;
+    setDisclaimerReady(false);
+    const id = setTimeout(() => setDisclaimerReady(true), DISCLAIMER_WAIT_MS);
+    return () => clearTimeout(id);
+  }, [popup]);
+
+  useEffect(() => {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
