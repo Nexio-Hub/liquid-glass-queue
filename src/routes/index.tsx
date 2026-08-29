@@ -291,7 +291,7 @@ function Index() {
 
             <form
               onSubmit={handleSubmit}
-              className="glass-panel mt-10 rounded-4xl p-6 sm:p-8"
+              className="glass-panel neon-outline mt-10 rounded-4xl p-6 sm:p-8"
             >
               <label htmlFor="queue-input" className="sr-only">
                 Username
