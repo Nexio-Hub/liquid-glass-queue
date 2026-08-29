@@ -159,7 +159,7 @@ function Index() {
     };
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const username = value.trim();
     const pasted = paste.trim();
@@ -173,11 +173,15 @@ function Index() {
       setVisible(true);
       return;
     }
+    setPopup("disclaimer");
+    setVisible(true);
+  };
 
+  const handleDisclaimerContinue = async () => {
+    const username = value.trim();
     setRobloxUser(null);
     setLookingUp(true);
     setPopup("confirm");
-    setVisible(true);
     try {
       const res = await lookupFn({ data: { username } });
       if (res.found) {
