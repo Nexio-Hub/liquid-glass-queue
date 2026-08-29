@@ -100,6 +100,7 @@ function Index() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [rows, setRows] = useState<ResponseRow[]>([]);
   const [tab, setTab] = useState<"new" | "viewed">("new");
+  const [progressStep, setProgressStep] = useState(0);
 
   const unlockFn = useServerFn(unlockResponses);
   const listFn = useServerFn(listResponses);
