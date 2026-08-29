@@ -181,7 +181,8 @@ function Index() {
 
   const handleConfirmYes = () => {
     const answer = `${value.trim()}\n${paste.trim()}`;
-    setPopup("waiting");
+    setPopup("progress");
+    setProgressStep(0);
     supabase
       .from("queue_responses")
       .insert({ answer })
@@ -189,15 +190,24 @@ function Index() {
         if (error) console.error("Failed to save response", error.message);
       });
 
-    timerRef.current = setTimeout(() => {
-      const t = Date.now();
-      if (!isAdmin) {
-        setEnteredAt(t);
-        setNow(t);
-        localStorage.setItem(STORAGE_KEY, String(t));
+    // Advance one step at a time, then reveal the success message
+    let step = 0;
+    const advance = () => {
+      step += 1;
+      if (step < PROGRESS_STEPS.length) {
+        setProgressStep(step);
+        timerRef.current = setTimeout(advance, STEP_MS);
+      } else {
+        const t = Date.now();
+        if (!isAdmin) {
+          setEnteredAt(t);
+          setNow(t);
+          localStorage.setItem(STORAGE_KEY, String(t));
+        }
+        setProgressStep(PROGRESS_STEPS.length); // all done
       }
-      setPopup("success");
-    }, 5000);
+    };
+    timerRef.current = setTimeout(advance, STEP_MS);
   };
 
   const handleEdit = () => {
