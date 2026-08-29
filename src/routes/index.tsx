@@ -14,6 +14,7 @@ import { lookupRobloxUser } from "@/lib/roblox.functions";
 
 type PopupState =
   | "idle"
+  | "disclaimer"
   | "confirm"
   | "progress"
   | "already"
@@ -50,9 +51,11 @@ const TUTORIAL_VIDEO_ID = "dQw4w9WgXcQ";
 const TUTORIAL_VIDEO_SRC = `https://www.youtube-nocookie.com/embed/${TUTORIAL_VIDEO_ID}`;
 
 // ───────────────────────────────────────────────────────────────────────────
-// Small text shown right under the queue form. Edit this to change it.
+// Disclaimer text shown in the Disclaimer popup after clicking Next.
+// Edit this to change it.
 // ───────────────────────────────────────────────────────────────────────────
-const BELOW_FORM_TEXT = "Text1";
+const DISCLAIMER_TEXT = "Text1";
+const DISCLAIMER_WAIT_MS = 5000;
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -106,6 +109,7 @@ function Index() {
   const [rows, setRows] = useState<ResponseRow[]>([]);
   const [tab, setTab] = useState<"new" | "viewed">("new");
   const [progressStep, setProgressStep] = useState(0);
+  const [disclaimerReady, setDisclaimerReady] = useState(false);
 
   const unlockFn = useServerFn(unlockResponses);
   const listFn = useServerFn(listResponses);
@@ -143,12 +147,19 @@ function Index() {
   }, [inQueue, remainingMs]);
 
   useEffect(() => {
+    if (popup !== "disclaimer") return;
+    setDisclaimerReady(false);
+    const id = setTimeout(() => setDisclaimerReady(true), DISCLAIMER_WAIT_MS);
+    return () => clearTimeout(id);
+  }, [popup]);
+
+  useEffect(() => {
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const username = value.trim();
     const pasted = paste.trim();
@@ -162,11 +173,15 @@ function Index() {
       setVisible(true);
       return;
     }
+    setPopup("disclaimer");
+    setVisible(true);
+  };
 
+  const handleDisclaimerContinue = async () => {
+    const username = value.trim();
     setRobloxUser(null);
     setLookingUp(true);
     setPopup("confirm");
-    setVisible(true);
     try {
       const res = await lookupFn({ data: { username } });
       if (res.found) {
@@ -351,10 +366,6 @@ function Index() {
                 Next
               </button>
             </form>
-
-            <p className="mt-5 text-sm font-medium text-muted-foreground">
-              {BELOW_FORM_TEXT}
-            </p>
           </div>
         </section>
 
@@ -437,7 +448,9 @@ function Index() {
             role="dialog"
             aria-modal="true"
             aria-label={
-              popup === "confirm"
+              popup === "disclaimer"
+                ? "Disclaimer"
+                : popup === "confirm"
                 ? "Confirm Roblox user"
                 : popup === "progress"
                 ? "Putting you in the queue"
