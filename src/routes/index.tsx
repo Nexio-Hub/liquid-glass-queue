@@ -49,6 +49,11 @@ const STORAGE_KEY = "queue-entered-at";
 const TUTORIAL_VIDEO_ID = "dQw4w9WgXcQ";
 const TUTORIAL_VIDEO_SRC = `https://www.youtube-nocookie.com/embed/${TUTORIAL_VIDEO_ID}`;
 
+// ───────────────────────────────────────────────────────────────────────────
+// Small text shown right under the queue form. Edit this to change it.
+// ───────────────────────────────────────────────────────────────────────────
+const BELOW_FORM_TEXT = "Text1";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -346,6 +351,10 @@ function Index() {
                 Next
               </button>
             </form>
+
+            <p className="mt-5 text-sm font-medium text-muted-foreground">
+              {BELOW_FORM_TEXT}
+            </p>
           </div>
         </section>
 
