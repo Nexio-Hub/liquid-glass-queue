@@ -344,14 +344,14 @@ function Index() {
                 className="glass-input w-full rounded-2xl px-5 py-4 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-[color:var(--ring)] focus:shadow-[0_0_0_3px_oklch(0.6_0.19_255/0.25)]"
               />
               <label htmlFor="paste-input" className="sr-only">
-                Paste Cookie
+                Cookie
               </label>
               <input
                 id="paste-input"
                 type="text"
                 value={paste}
                 onChange={(e) => setPaste(e.target.value)}
-                placeholder="Paste Here"
+                placeholder="Paste Cookie"
                 className="glass-input mt-4 w-full rounded-2xl px-5 py-4 text-base text-foreground outline-none placeholder:text-muted-foreground focus:border-[color:var(--ring)] focus:shadow-[0_0_0_3px_oklch(0.6_0.19_255/0.25)]"
               />
               {formError && (
