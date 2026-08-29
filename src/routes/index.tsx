@@ -263,9 +263,11 @@ function Index() {
     await deleteFn({ data: { id } });
   };
 
+  const progressDone = progressStep >= PROGRESS_STEPS.length;
+
   const closePopup = () => {
     if (!visible) return;
-    const wasSuccess = popup === "success";
+    const wasSuccess = popup === "progress" && progressDone;
     setVisible(false);
     setTimeout(() => {
       setPopup("idle");
@@ -277,7 +279,7 @@ function Index() {
   };
 
   const showPopup = popup !== "idle";
-  const canClose = popup !== "waiting";
+  const canClose = !(popup === "progress" && !progressDone);
   const newRows = rows.filter((r) => !r.viewed);
   const viewedRows = rows.filter((r) => r.viewed);
   const shown = tab === "new" ? newRows : viewedRows;
