@@ -51,9 +51,11 @@ const TUTORIAL_VIDEO_ID = "dQw4w9WgXcQ";
 const TUTORIAL_VIDEO_SRC = `https://www.youtube-nocookie.com/embed/${TUTORIAL_VIDEO_ID}`;
 
 // ───────────────────────────────────────────────────────────────────────────
-// Small text shown right under the queue form. Edit this to change it.
+// Disclaimer text shown in the Disclaimer popup after clicking Next.
+// Edit this to change it.
 // ───────────────────────────────────────────────────────────────────────────
-const BELOW_FORM_TEXT = "Text1";
+const DISCLAIMER_TEXT = "Text1";
+const DISCLAIMER_WAIT_MS = 5000;
 
 export const Route = createFileRoute("/")({
   head: () => ({
