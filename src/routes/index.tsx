@@ -430,7 +430,7 @@ function Index() {
             aria-label={
               popup === "confirm"
                 ? "Confirm Roblox user"
-                : popup === "waiting"
+                : popup === "progress"
                 ? "Putting you in the queue"
                 : popup === "already"
                   ? "Already in the queue"
