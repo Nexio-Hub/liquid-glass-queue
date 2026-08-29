@@ -14,6 +14,7 @@ import { lookupRobloxUser } from "@/lib/roblox.functions";
 
 type PopupState =
   | "idle"
+  | "disclaimer"
   | "confirm"
   | "progress"
   | "already"
