@@ -500,12 +500,62 @@ function Index() {
                   </>
                 )}
               </div>
-            ) : popup === "waiting" ? (
-              <div className="flex flex-col items-center">
-                <Spinner />
-                <p className="mt-6 text-lg font-semibold text-foreground">
-                  Putting you in the queue...
-                </p>
+            ) : popup === "progress" ? (
+              <div className="flex flex-col">
+                <div className="flex flex-col gap-4 text-left">
+                  {PROGRESS_STEPS.map((step, i) => {
+                    const done = progressStep > i;
+                    const current = progressStep === i;
+                    return (
+                      <div key={step.active} className="flex items-center gap-3">
+                        {done ? (
+                          <CheckIcon />
+                        ) : current ? (
+                          <span
+                            className="inline-block h-6 w-6 shrink-0 animate-spin rounded-full border-[3px] border-[color:var(--primary)] border-t-transparent"
+                            aria-hidden="true"
+                          />
+                        ) : (
+                          <span
+                            className="inline-block h-6 w-6 shrink-0 rounded-full border-[3px] border-white/20"
+                            aria-hidden="true"
+                          />
+                        )}
+                        <p
+                          className={`text-lg font-semibold leading-snug ${
+                            done
+                              ? "text-muted-foreground"
+                              : current
+                                ? "text-foreground"
+                                : "text-muted-foreground/60"
+                          }`}
+                        >
+                          {done ? step.done : step.active}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {progressDone && (
+                  <div className="animate-enter">
+                    <div
+                      className="mt-6 w-full border-t"
+                      style={{ borderColor: "oklch(1 0 0 / 15%)" }}
+                    />
+                    <p className="mt-6 text-center text-lg font-semibold leading-snug text-foreground">
+                      You've been put in the queue successfully! Come back after
+                      ~5h.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={closePopup}
+                      className="glass-button mt-6 w-full rounded-2xl px-5 py-3.5 text-base font-semibold hover:brightness-110 active:scale-[0.98]"
+                    >
+                      Done
+                    </button>
+                  </div>
+                )}
               </div>
             ) : popup === "already" ? (
               <div className="flex flex-col items-center">
