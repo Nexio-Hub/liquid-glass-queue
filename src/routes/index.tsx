@@ -366,10 +366,6 @@ function Index() {
                 Next
               </button>
             </form>
-
-            <p className="mt-5 text-sm font-medium text-muted-foreground">
-              {BELOW_FORM_TEXT}
-            </p>
           </div>
         </section>
 
