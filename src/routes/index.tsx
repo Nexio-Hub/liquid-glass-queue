@@ -448,7 +448,9 @@ function Index() {
             role="dialog"
             aria-modal="true"
             aria-label={
-              popup === "confirm"
+              popup === "disclaimer"
+                ? "Disclaimer"
+                : popup === "confirm"
                 ? "Confirm Roblox user"
                 : popup === "progress"
                 ? "Putting you in the queue"
