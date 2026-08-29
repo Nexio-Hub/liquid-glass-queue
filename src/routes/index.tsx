@@ -15,10 +15,16 @@ import { lookupRobloxUser } from "@/lib/roblox.functions";
 type PopupState =
   | "idle"
   | "confirm"
-  | "waiting"
-  | "success"
+  | "progress"
   | "already"
   | "responses";
+
+const PROGRESS_STEPS = [
+  { active: "Confirming user...", done: "Confirmed user" },
+  { active: "Putting you in the queue...", done: "Put you in the queue" },
+  { active: "Finishing...", done: "Finished" },
+] as const;
+const STEP_MS = 5000;
 
 type RobloxUser = {
   name: string;
