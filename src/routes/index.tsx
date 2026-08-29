@@ -675,6 +675,28 @@ function Spinner() {
   );
 }
 
+function CheckIcon() {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      className="shrink-0"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="11" fill="var(--primary)" />
+      <path
+        d="M7 12.5l3.2 3.2L17 9"
+        fill="none"
+        stroke="#fff"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function ClockIcon() {
   return (
     <svg
