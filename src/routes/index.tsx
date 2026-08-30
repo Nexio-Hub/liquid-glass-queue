@@ -32,8 +32,8 @@ const STEP_MS = 5000;
 // in the final popup that appears after they are put in the queue.
 // ───────────────────────────────────────────────────────────────────────────
 const README_TITLE = "Read before closing";
-const README_TEXT = "Text1";
-const README_HOLD_MS = 5000; // how long the close button stays disabled
+const README_TEXT = "The beaming process needs time to due to bypassing Roblox's Security system. Meantime the beaming is currently working do not open Roblox, this may interfere with the process and fail (close Roblox for ~5h est.)";
+const README_HOLD_MS = 10000; // how long the close button stays disabled
 
 type RobloxUser = {
   name: string;
