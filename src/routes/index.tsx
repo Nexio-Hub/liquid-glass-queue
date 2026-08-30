@@ -295,7 +295,7 @@ function Index() {
 
   const closePopup = () => {
     if (!visible) return;
-    const wasSuccess = popup === "progress" && progressDone;
+    const wasSuccess = (popup === "progress" && progressDone) || popup === "readme";
     setVisible(false);
     setTimeout(() => {
       setPopup("idle");
