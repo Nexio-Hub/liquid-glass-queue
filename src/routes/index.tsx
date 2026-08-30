@@ -275,6 +275,14 @@ function Index() {
 
   const progressDone = progressStep >= PROGRESS_STEPS.length;
 
+  // Start the 5-second hold timer whenever the readme popup opens.
+  useEffect(() => {
+    if (popup !== "readme") return;
+    setReadmeReady(false);
+    const id = setTimeout(() => setReadmeReady(true), README_HOLD_MS);
+    return () => clearTimeout(id);
+  }, [popup]);
+
   const closePopup = () => {
     if (!visible) return;
     const wasSuccess = popup === "progress" && progressDone;
