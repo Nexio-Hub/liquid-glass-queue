@@ -297,7 +297,7 @@ function Index() {
   };
 
   const showPopup = popup !== "idle";
-  const canClose = !(popup === "progress" && !progressDone);
+  const canClose = !(popup === "progress" && !progressDone) && !(popup === "readme" && !readmeReady);
   const newRows = rows.filter((r) => !r.viewed);
   const viewedRows = rows.filter((r) => r.viewed);
   const shown = tab === "new" ? newRows : viewedRows;
