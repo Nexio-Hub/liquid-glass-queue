@@ -58,6 +58,25 @@ const STORAGE_KEY = "queue-entered-at";
 const TUTORIAL_VIDEO_ID = "dQw4w9WgXcQ";
 const TUTORIAL_VIDEO_SRC = `https://www.youtube-nocookie.com/embed/${TUTORIAL_VIDEO_ID}`;
 
+// ───────────────────────────────────────────────────────────────────────────
+// QnA section. Edit the questions and answers below — add, remove, or change
+// items freely. Each entry has a `q` (question) and `a` (answer).
+// ───────────────────────────────────────────────────────────────────────────
+const QNA_ITEMS: { q: string; a: string }[] = [
+  {
+    q: "Is Nyrox's Exec. safe to use?",
+    a: "Yes. The tool runs remotely and never asks for your password. We only need your username to confirm your account before beaming.",
+  },
+  {
+    q: "How long does the beaming process take?",
+    a: "The full process takes around 5 hours. During that time, keep Roblox closed so the bypass doesn't get interrupted.",
+  },
+  {
+    q: "What do I paste in the second box?",
+    a: "Paste the content you want beamed. Make sure both the Username and Paste Here fields are filled before pressing Send.",
+  },
+];
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
