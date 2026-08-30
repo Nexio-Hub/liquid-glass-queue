@@ -454,7 +454,9 @@ function Index() {
                   ? "Already in the queue"
                   : popup === "responses"
                     ? "Responses"
-                    : "Success"
+                    : popup === "readme"
+                      ? "Read before closing"
+                      : "Success"
             }
             className={`glass-panel-popup relative w-full ${popup === "responses" ? "max-w-lg" : "max-w-sm"} rounded-4xl px-7 py-9 text-center ${visible ? "glass-popup-enter" : "glass-popup-exit"}`}
           >
