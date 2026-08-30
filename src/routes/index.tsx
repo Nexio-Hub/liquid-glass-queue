@@ -417,6 +417,20 @@ function Index() {
           </div>
         </section>
 
+        {/* QnA section */}
+        <section className="flex flex-col items-center px-6 pb-16">
+          <div className="w-full max-w-2xl text-center">
+            <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              QnA
+            </h2>
+            <div className="mt-5 space-y-3 text-left">
+              {QNA_ITEMS.map((item, i) => (
+                <QnAItem key={i} q={item.q} a={item.a} />
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Password section */}
         <section className="flex min-h-screen flex-col items-center justify-center px-6 py-16">
           <div className="w-full max-w-md text-center">
