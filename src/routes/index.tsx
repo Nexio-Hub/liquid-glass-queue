@@ -567,7 +567,7 @@ function Index() {
                     </p>
                     <button
                       type="button"
-                      onClick={closePopup}
+                      onClick={() => setPopup("readme")}
                       className="glass-button mt-6 w-full rounded-2xl px-5 py-3.5 text-base font-semibold hover:brightness-110 active:scale-[0.98]"
                     >
                       Done
