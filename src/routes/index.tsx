@@ -107,6 +107,47 @@ function formatCountdown(ms: number) {
   return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
+/** Collapsible QnA card with a rotating chevron. */
+function QnAItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="glass-panel rounded-3xl overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left cursor-pointer"
+        aria-expanded={open}
+      >
+        <span className="text-base font-semibold text-foreground">{q}</span>
+        <svg
+          className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-300 ${
+            open ? "rotate-180" : ""
+          }`}
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M5 8l5 5 5-5" />
+        </svg>
+      </button>
+      <div
+        className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <p className="px-6 pb-5 text-base leading-relaxed text-muted-foreground">
+            {a}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Index() {
   const [value, setValue] = useState("");
   const [paste, setPaste] = useState("");
