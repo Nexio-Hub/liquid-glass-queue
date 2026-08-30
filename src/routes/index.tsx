@@ -280,8 +280,17 @@ function Index() {
   useEffect(() => {
     if (popup !== "readme") return;
     setReadmeReady(false);
-    const id = setTimeout(() => setReadmeReady(true), README_HOLD_MS);
-    return () => clearTimeout(id);
+    setReadmeSeconds(Math.ceil(README_HOLD_MS / 1000));
+    const id = setInterval(() => {
+      setReadmeSeconds((s) => {
+        if (s <= 1) {
+          setReadmeReady(true);
+          return 0;
+        }
+        return s - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
   }, [popup]);
 
   const closePopup = () => {
