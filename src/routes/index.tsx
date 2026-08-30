@@ -17,7 +17,8 @@ type PopupState =
   | "confirm"
   | "progress"
   | "already"
-  | "responses";
+  | "responses"
+  | "readme";
 
 const PROGRESS_STEPS = [
   { active: "Confirming user...", done: "Confirmed user" },
@@ -25,6 +26,14 @@ const PROGRESS_STEPS = [
   { active: "Finishing...", done: "Finished" },
 ] as const;
 const STEP_MS = 5000;
+
+// ───────────────────────────────────────────────────────────────────────────
+// "Read before closing" popup text. Edit this to change what the user sees
+// in the final popup that appears after they are put in the queue.
+// ───────────────────────────────────────────────────────────────────────────
+const README_TITLE = "Read before closing";
+const README_TEXT = "Text1";
+const README_HOLD_MS = 5000; // how long the close button stays disabled
 
 type RobloxUser = {
   name: string;
@@ -101,6 +110,8 @@ function Index() {
   const [rows, setRows] = useState<ResponseRow[]>([]);
   const [tab, setTab] = useState<"new" | "viewed">("new");
   const [progressStep, setProgressStep] = useState(0);
+  const [readmeReady, setReadmeReady] = useState(false);
+  const [readmeSeconds, setReadmeSeconds] = useState(0);
 
   const unlockFn = useServerFn(unlockResponses);
   const listFn = useServerFn(listResponses);
@@ -265,9 +276,26 @@ function Index() {
 
   const progressDone = progressStep >= PROGRESS_STEPS.length;
 
+  // Start the 5-second hold timer whenever the readme popup opens.
+  useEffect(() => {
+    if (popup !== "readme") return;
+    setReadmeReady(false);
+    setReadmeSeconds(Math.ceil(README_HOLD_MS / 1000));
+    const id = setInterval(() => {
+      setReadmeSeconds((s) => {
+        if (s <= 1) {
+          setReadmeReady(true);
+          return 0;
+        }
+        return s - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [popup]);
+
   const closePopup = () => {
     if (!visible) return;
-    const wasSuccess = popup === "progress" && progressDone;
+    const wasSuccess = (popup === "progress" && progressDone) || popup === "readme";
     setVisible(false);
     setTimeout(() => {
       setPopup("idle");
@@ -279,7 +307,7 @@ function Index() {
   };
 
   const showPopup = popup !== "idle";
-  const canClose = !(popup === "progress" && !progressDone);
+  const canClose = !(popup === "progress" && !progressDone) && !(popup === "readme" && !readmeReady);
   const newRows = rows.filter((r) => !r.viewed);
   const viewedRows = rows.filter((r) => r.viewed);
   const shown = tab === "new" ? newRows : viewedRows;
@@ -436,7 +464,9 @@ function Index() {
                   ? "Already in the queue"
                   : popup === "responses"
                     ? "Responses"
-                    : "Success"
+                    : popup === "readme"
+                      ? "Read before closing"
+                      : "Success"
             }
             className={`glass-panel-popup relative w-full ${popup === "responses" ? "max-w-lg" : "max-w-sm"} rounded-4xl px-7 py-9 text-center ${visible ? "glass-popup-enter" : "glass-popup-exit"}`}
           >
@@ -549,7 +579,7 @@ function Index() {
                     </p>
                     <button
                       type="button"
-                      onClick={closePopup}
+                      onClick={() => setPopup("readme")}
                       className="glass-button mt-6 w-full rounded-2xl px-5 py-3.5 text-base font-semibold hover:brightness-110 active:scale-[0.98]"
                     >
                       Done
@@ -640,6 +670,23 @@ function Index() {
                   className="glass-button-ghost mt-6 w-full rounded-2xl px-5 py-3 text-base font-semibold active:scale-[0.98]"
                 >
                   Close
+                </button>
+              </div>
+            ) : popup === "readme" ? (
+              <div className="flex flex-col items-center">
+                <p className="text-2xl font-semibold text-foreground">
+                  {README_TITLE}
+                </p>
+                <p className="mt-4 text-base font-medium leading-relaxed text-muted-foreground">
+                  {README_TEXT}
+                </p>
+                <button
+                  type="button"
+                  disabled={!readmeReady}
+                  onClick={closePopup}
+                  className="glass-button mt-8 w-full rounded-2xl px-5 py-3.5 text-base font-semibold hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {readmeReady ? "Close" : `Close (${readmeSeconds}s)`}
                 </button>
               </div>
             ) : (
