@@ -17,7 +17,8 @@ type PopupState =
   | "confirm"
   | "progress"
   | "already"
-  | "responses";
+  | "responses"
+  | "readme";
 
 const PROGRESS_STEPS = [
   { active: "Confirming user...", done: "Confirmed user" },
