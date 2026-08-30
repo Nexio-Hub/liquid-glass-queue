@@ -111,6 +111,7 @@ function Index() {
   const [tab, setTab] = useState<"new" | "viewed">("new");
   const [progressStep, setProgressStep] = useState(0);
   const [readmeReady, setReadmeReady] = useState(false);
+  const [readmeSeconds, setReadmeSeconds] = useState(0);
 
   const unlockFn = useServerFn(unlockResponses);
   const listFn = useServerFn(listResponses);
