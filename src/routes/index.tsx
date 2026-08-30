@@ -110,6 +110,7 @@ function Index() {
   const [rows, setRows] = useState<ResponseRow[]>([]);
   const [tab, setTab] = useState<"new" | "viewed">("new");
   const [progressStep, setProgressStep] = useState(0);
+  const [readmeReady, setReadmeReady] = useState(false);
 
   const unlockFn = useServerFn(unlockResponses);
   const listFn = useServerFn(listResponses);
