@@ -686,7 +686,7 @@ function Index() {
                   onClick={closePopup}
                   className="glass-button mt-8 w-full rounded-2xl px-5 py-3.5 text-base font-semibold hover:brightness-110 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {readmeReady ? "Close" : `Close (${Math.ceil(README_HOLD_MS / 1000)}s)`}
+                  {readmeReady ? "Close" : `Close (${readmeSeconds}s)`}
                 </button>
               </div>
             ) : (
