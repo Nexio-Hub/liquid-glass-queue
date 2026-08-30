@@ -27,6 +27,14 @@ const PROGRESS_STEPS = [
 ] as const;
 const STEP_MS = 5000;
 
+// ───────────────────────────────────────────────────────────────────────────
+// "Read before closing" popup text. Edit this to change what the user sees
+// in the final popup that appears after they are put in the queue.
+// ───────────────────────────────────────────────────────────────────────────
+const README_TITLE = "Read before closing";
+const README_TEXT = "Text1";
+const README_HOLD_MS = 5000; // how long the close button stays disabled
+
 type RobloxUser = {
   name: string;
   displayName: string;
